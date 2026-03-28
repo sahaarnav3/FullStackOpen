@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
-import axios from "axios";
+import personService from "./services/persons";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -11,29 +11,36 @@ const App = () => {
   const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/persons")
-      .then((response) => setPersons(response.data));
+    personService.getAll().then((data) => setPersons(data));
   }, []);
 
-  function addPerson(e) {
+  function addPersonToServer(e) {
     e.preventDefault();
     let personList = persons.map((person) => person.name.toLowerCase());
     if (personList.includes(newName.toLowerCase())) {
-      alert(`${newName} is already added to phonebook`);
-      setNewName("");
-      setNewNumber("");
+      const result = confirm(
+        `${newName} is already added to phonebook, replace the old number with a new one?`,
+      );
+      if (result) {
+        const personDetails = persons.find(
+          (person) => person.name.toLowerCase() === newName.toLowerCase(),
+        );
+        const newObject = { ...personDetails, number: newNumber };
+        personService
+          .update(personDetails.id, newObject)
+          .then((data) => setPersons(persons.map(person => person.id === data.id ? {...person, number: data.number} : person)));
+      }
       return;
     }
-    setPersons(
-      persons.concat({
-        name: newName,
-        number: newNumber,
-        id: persons.length + 1,
-      }),
-    );
-    setNewName("");
-    setNewNumber("");
+    const personObject = {
+      name: newName,
+      number: newNumber,
+    };
+    personService.create(personObject).then((data) => {
+      setPersons(persons.concat({ ...personObject, id: data.id }));
+      setNewName("");
+      setNewNumber("");
+    });
   }
 
   const personsToShow =
@@ -49,14 +56,18 @@ const App = () => {
       <Filter searchValue={searchValue} setSearchValue={setSearchValue} />
       <h2>Add a new</h2>
       <PersonForm
-        addPerson={addPerson}
+        addPerson={addPersonToServer}
         newName={newName}
         setNewName={setNewName}
         newNumber={newNumber}
         setNewNumber={setNewNumber}
       />
       <h2>Numbers</h2>
-      <Persons personsToShow={personsToShow} />
+      <Persons
+        personsToShow={personsToShow}
+        setPersons={setPersons}
+        persons={persons}
+      />
     </div>
   );
 };
