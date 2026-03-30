@@ -3,16 +3,31 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import personService from "./services/persons";
+import Notification from "./components/Notification";
+import ErrorNotification from "./components/ErrorNotification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [searchValue, setSearchValue] = useState("");
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     personService.getAll().then((data) => setPersons(data));
   }, []);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setSuccessMessage(null);
+      setErrorMessage(null);
+      // console.log("timeout triggered");
+    }, 4000);
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [successMessage, errorMessage]);
 
   function addPersonToServer(e) {
     e.preventDefault();
@@ -28,7 +43,25 @@ const App = () => {
         const newObject = { ...personDetails, number: newNumber };
         personService
           .update(personDetails.id, newObject)
-          .then((data) => setPersons(persons.map(person => person.id === data.id ? {...person, number: data.number} : person)));
+          .then((data) => {
+            setPersons(
+              persons.map((person) =>
+                person.id === data.id
+                  ? { ...person, number: data.number }
+                  : person,
+              ),
+            );
+            setSuccessMessage(
+              `Phone Number of ${newName} is changed to: ${newNumber}`,
+            );
+            setNewName("");
+            setNewNumber("");
+          })
+          .catch(() =>
+            setErrorMessage(
+              `Information of ${newName} has been already removed from server`,
+            ),
+          );
       }
       return;
     }
@@ -38,6 +71,9 @@ const App = () => {
     };
     personService.create(personObject).then((data) => {
       setPersons(persons.concat({ ...personObject, id: data.id }));
+      setSuccessMessage(
+        `Person ${newName} with number ${newNumber} added successfully.`,
+      );
       setNewName("");
       setNewNumber("");
     });
@@ -53,6 +89,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={successMessage} />
+      <ErrorNotification message={errorMessage} />
       <Filter searchValue={searchValue} setSearchValue={setSearchValue} />
       <h2>Add a new</h2>
       <PersonForm
