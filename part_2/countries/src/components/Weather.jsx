@@ -1,19 +1,13 @@
 import { useEffect } from "react";
-import axios from "axios";
 import { useState } from "react";
+import getWeatherData from "../services/weather";
 
 export default function Weather({ lat, long, capital }) {
-  const weatherApiKey = import.meta.env.VITE_WEATHER_API_KEY;
-  const weatherAPIBaseUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&appid=${weatherApiKey}&units=metric`;
+  
   const [weatherData, setWeatherData] = useState(null);
 
   useEffect(() => {
-    axios
-      .get(weatherAPIBaseUrl)
-      .then((response) => {
-        setWeatherData(response.data);
-      })
-      .catch((err) => console.log("weather err", err));
+    getWeatherData(lat, long).then(data => setWeatherData(data));
   }, []);
 
   return (

@@ -1,18 +1,15 @@
 import { useEffect } from "react";
 import { useState } from "react";
-import axios from "axios";
+import getAllCountries from "./services/countries";
+
 import CountryDetails from "./components/CountryDetails";
 
 function App() {
   const [searchValue, setSearchValue] = useState("");
   const [completeList, setCompleteList] = useState([]);
-  const apiBaseUrl = "https://studies.cs.helsinki.fi/restcountries/api/all";
 
   useEffect(() => {
-    axios
-      .get(apiBaseUrl)
-      .then((response) => setCompleteList(response.data))
-      .catch((err) => console.log("Couldn't fetch countries:", err));
+    getAllCountries().then((data) => setCompleteList(data));
   }, []);
 
   const displayCountries = completeList.filter(
@@ -21,7 +18,7 @@ function App() {
       country?.name?.common.toLowerCase().includes(searchValue.toLowerCase()),
   );
 
-  function handleSearch(e){
+  function handleSearch(e) {
     setSearchValue(e.target.value);
   }
 
@@ -31,7 +28,9 @@ function App() {
         Find Countries:
         <input type="text" onChange={handleSearch} />
       </label>
-      {displayCountries && displayCountries.length > 0 && <CountryDetails countryList={displayCountries} />}
+      {displayCountries && displayCountries.length > 0 && (
+        <CountryDetails countryList={displayCountries} />
+      )}
     </>
   );
 }
