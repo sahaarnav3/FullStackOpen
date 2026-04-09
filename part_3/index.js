@@ -57,7 +57,7 @@ app.get("/api/persons/:id", (req, res) => {
 app.delete("/api/persons/:id", (req, res) => {
   const id = req.params.id;
   persons = persons.filter((person) => person.id !== id);
-  res.status(204).end();
+  return res.status(204).end();
 });
 
 const generateId = () => {
