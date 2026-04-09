@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+app.use(express.static('dist'));
 // const { loadEnvFile } = require("node:process");
 // loadEnvFile();
 const PORT = process.env.PORT || 3001;
@@ -38,7 +39,7 @@ app.get("/api/persons", (req, res) => {
   return res.send(persons);
 });
 
-app.get("/api/info", (req, res) => {
+app.get("/api/persons/info", (req, res) => {
   const element = `<p>Phonebook has info for ${persons.length} people</p>
    <p>${Date()}</p>
   `;
