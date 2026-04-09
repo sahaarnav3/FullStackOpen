@@ -6,8 +6,8 @@ export default function Persons({ personsToShow, setPersons, persons }) {
       return;
     personService
       .deletePerson(id)
-      .then((data) => {
-        if (data.id === id) {
+      .then(data => {
+        if (data == 204) {
           setPersons(persons.filter((person) => person.id !== id));
         }
       })
