@@ -1,7 +1,10 @@
 const express = require("express");
 const app = express();
-const PORT = 3001;
+const { loadEnvFile } = require("node:process");
+loadEnvFile();
+const PORT = process.env.PORT || 3001;
 const morgan = require('morgan');
+const cors = require('cors');
 
 let persons = [
   {
@@ -29,6 +32,7 @@ let persons = [
 app.use(express.json());
 morgan.token('requestBody', function(req, res) {return JSON.stringify(req.body) })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :requestBody'));
+app.use(cors());
 
 app.get("/api/persons", (req, res) => {
   return res.send(persons);
