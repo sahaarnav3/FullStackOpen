@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const PORT = 3001;
+const morgan = require('morgan');
 
 let persons = [
   {
@@ -26,6 +27,8 @@ let persons = [
 ];
 
 app.use(express.json());
+morgan.token('requestBody', function(req, res) {return JSON.stringify(req.body) })
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :requestBody'));
 
 app.get("/api/persons", (req, res) => {
   return res.send(persons);
