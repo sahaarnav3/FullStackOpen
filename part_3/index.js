@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
-const { loadEnvFile } = require("node:process");
-loadEnvFile();
+// const { loadEnvFile } = require("node:process");
+// loadEnvFile();
 const PORT = process.env.PORT || 3001;
 const morgan = require('morgan');
 const cors = require('cors');
