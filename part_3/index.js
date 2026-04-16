@@ -1,40 +1,28 @@
 const express = require("express");
 const app = express();
-app.use(express.static('dist'));
-// const { loadEnvFile } = require("node:process");
-// loadEnvFile();
+app.use(express.static("dist"));
 const PORT = process.env.PORT || 3001;
-const morgan = require('morgan');
+const morgan = require("morgan");
+require('dotenv').config();
+const Person = require('./models/person');
 
-let persons = [
-  {
-    id: "1",
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: "2",
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: "3",
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: "4",
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-];
+let persons = [];
+Person.find({}).then(response => {
+  persons = response;
+})
 
 app.use(express.json());
-morgan.token('requestBody', function(req, res) {return JSON.stringify(req.body) })
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :requestBody'));
+morgan.token("requestBody", function (req, res) {
+  return JSON.stringify(req.body);
+});
+app.use(
+  morgan(
+    ":method :url :status :res[content-length] - :response-time ms :requestBody",
+  ),
+);
 
 app.get("/api/persons", (req, res) => {
-  return res.send(persons);
+  return res.json(persons);
 });
 
 app.get("/api/persons/info", (req, res) => {
@@ -58,12 +46,6 @@ app.delete("/api/persons/:id", (req, res) => {
   return res.status(204).end();
 });
 
-const generateId = () => {
-  const maxId =
-    persons.length > 0 ? Math.max(...persons.map((n) => Number(n.id))) : 0;
-  return String(maxId + 1);
-};
-
 app.post("/api/persons", (req, res) => {
   const personDetails = req.body;
 
@@ -74,19 +56,18 @@ app.post("/api/persons", (req, res) => {
     return res.status(400).json({ error: "Name is Missing" });
   for (let person of persons) {
     if (person.name.toLowerCase() === personDetails.name.toLowerCase())
-      return res
-        .status(400)
-        .json({
-          error: "Name is Already Present. Try again with another name.",
-        });
+      return res.status(400).json({
+        error: "Name is Already Present. Try again with another name.",
+      });
   }
-  const person = {
-    id: generateId(),
+  const newPerson = new Person({
     name: personDetails.name,
     number: personDetails.number,
-  };
-  persons = persons.concat(person);
-  res.json(person);
+  });
+  newPerson.save().then(response => {
+    persons = persons.concat(newPerson);
+    return res.json(response);
+  })
 });
 
 app.listen(PORT, () => {
