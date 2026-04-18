@@ -69,14 +69,24 @@ const App = () => {
       name: newName,
       number: newNumber,
     };
-    personService.create(personObject).then((data) => {
-      setPersons(persons.concat({ ...personObject, id: data.id }));
-      setSuccessMessage(
-        `Person ${newName} with number ${newNumber} added successfully.`,
-      );
-      setNewName("");
-      setNewNumber("");
-    });
+    personService
+      .create(personObject)
+      .then((data) => {
+        setPersons(persons.concat({ ...personObject, id: data.id }));
+        setSuccessMessage(
+          `Person ${newName} with number ${newNumber} added successfully.`,
+        );
+        setNewName("");
+        setNewNumber("");
+      })
+      .catch((error) => {
+        console.log(error.response.data.error);
+        setErrorMessage(
+          `Person Validation failed: name: ${error.response.data.error}`,
+        );
+        setNewName("");
+        setNewNumber("");
+      });
   }
 
   const personsToShow =
