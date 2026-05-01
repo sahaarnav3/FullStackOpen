@@ -1,4 +1,6 @@
 const logger = require('./logger')
+const User = require('../models/user')
+const jwt = require('jsonwebtoken')
 
 const requestLogger = (request, response, next) => {
   logger.info('Method:', request.method)
@@ -10,6 +12,28 @@ const requestLogger = (request, response, next) => {
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
+}
+
+const tokenExtractor = (request, response, next) => {
+  const authorization = request.get('authorization')
+  if(authorization && authorization.startsWith('Bearer '))
+    request.token = authorization.replace('Bearer ', '')
+  next()
+}
+
+const userExtractor = async (request, response, next) => {
+  const authorization = request.get('authorization')
+  if(!(authorization && authorization.startsWith('Bearer ')))
+    return response.status(401).send({ error: 'Unauthorized' })
+
+  const decodedToken = jwt.verify(authorization.replace('Bearer ', ''), process.env.SECRET)
+  if(!decodedToken.id)
+    return response.status(401).send({ error: 'Invalid Token' })
+  const user = await User.findById(decodedToken.id).select('username name blogs')
+  if(!user)
+    return response.status(404).json({ error: 'User doesn\'t exist' })
+  request.user = user
+  next()
 }
 
 const errorHandler = (error, request, response, next) => {
@@ -33,5 +57,7 @@ const errorHandler = (error, request, response, next) => {
 module.exports = {
   requestLogger,
   unknownEndpoint,
-  errorHandler
+  errorHandler,
+  tokenExtractor,
+  userExtractor
 }
