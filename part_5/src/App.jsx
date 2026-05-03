@@ -8,6 +8,9 @@ const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [url, setUrl] = useState("");
   const [user, setUser] = useState();
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -48,7 +51,26 @@ const App = () => {
       setUsername("");
       setPassword("");
     } catch {
-      setErrorMessage("Wrong Credentials");
+      setErrorMessage("Wrong username or password");
+    }
+  };
+
+  const handleLogout = () => {
+    window.localStorage.removeItem("loggedBlogAppUser");
+    window.location.reload();
+  };
+
+  const createFormHandler = async (e) => {
+    e.preventDefault();
+    try {
+      const blogResponse = await blogService.create({ title, author, url });
+      setBlogs(blogs.concat(blogResponse));
+      setSuccessMessage(`a new blog ${title} added`)
+      setTitle("");
+      setAuthor("");
+      setUrl("");
+    } catch {
+      setErrorMessage("Blog Adding Failed")
     }
   };
 
@@ -79,10 +101,42 @@ const App = () => {
     </form>
   );
 
-  const handleLogout = () => {
-    window.localStorage.removeItem("loggedBlogAppUser");
-    window.location.reload();
-  };
+  const blogForm = () => (
+    <form onSubmit={createFormHandler}>
+      <h1>create new</h1>
+      <div>
+        <label>
+          title:
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </label>
+      </div>
+      <div>
+        <label>
+          author:
+          <input
+            type="text"
+            value={author}
+            onChange={(e) => setAuthor(e.target.value)}
+          />
+        </label>
+      </div>
+      <div>
+        <label>
+          url:
+          <input
+            type="text"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+          />
+        </label>
+      </div>
+      <button type="submit">Create</button>
+    </form>
+  );
 
   return (
     <div>
@@ -91,9 +145,11 @@ const App = () => {
       {!user && loginForm()}
       {user && (
         <div>
-          <button onClick={handleLogout}>Logout</button>
-          <h2>blogs</h2>
+          <h1>blogs</h1>
           <p>{user.name} logged in</p>
+          <button onClick={handleLogout}>Logout</button>
+          {blogForm()}
+          <br />
           {blogs.map((blog) => (
             <Blog key={blog.id} blog={blog} />
           ))}
