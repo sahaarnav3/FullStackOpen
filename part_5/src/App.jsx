@@ -3,6 +3,7 @@ import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import ErrorNotification from "./components/ErrorNotification";
 import SuccessNotification from "./components/SuccessNotification";
+import BlogForm from "./components/BlogForm";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -14,6 +15,7 @@ const App = () => {
   const [user, setUser] = useState();
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [blogToggle, setBlogToggle] = useState(false);
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -65,12 +67,12 @@ const App = () => {
     try {
       const blogResponse = await blogService.create({ title, author, url });
       setBlogs(blogs.concat(blogResponse));
-      setSuccessMessage(`a new blog ${title} added`)
+      setSuccessMessage(`a new blog ${title} added`);
       setTitle("");
       setAuthor("");
       setUrl("");
     } catch {
-      setErrorMessage("Blog Adding Failed")
+      setErrorMessage("Blog Adding Failed");
     }
   };
 
@@ -101,43 +103,6 @@ const App = () => {
     </form>
   );
 
-  const blogForm = () => (
-    <form onSubmit={createFormHandler}>
-      <h1>create new</h1>
-      <div>
-        <label>
-          title:
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          author:
-          <input
-            type="text"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          url:
-          <input
-            type="text"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-          />
-        </label>
-      </div>
-      <button type="submit">Create</button>
-    </form>
-  );
-
   return (
     <div>
       <SuccessNotification message={successMessage} />
@@ -145,10 +110,34 @@ const App = () => {
       {!user && loginForm()}
       {user && (
         <div>
-          <h1>blogs</h1>
-          <p>{user.name} logged in</p>
-          <button onClick={handleLogout}>Logout</button>
-          {blogForm()}
+          <div>
+            <h1>blogs</h1>
+            <p>{user.name} logged in</p>
+            <button onClick={handleLogout}>Logout</button>
+          </div>
+          <br />
+          <div>
+            {blogToggle ? (
+              <BlogForm
+                createFormHandler={createFormHandler}
+                title={title}
+                setTitle={setTitle}
+                author={author}
+                setAuthor={setAuthor}
+                url={url}
+                setUrl={setUrl}
+              />
+            ) : (
+              ""
+            )}
+            {blogToggle ? (
+              <button onClick={() => setBlogToggle(false)}>cancel</button>
+            ) : (
+              <button onClick={() => setBlogToggle(true)}>
+                create new blog
+              </button>
+            )}
+          </div>
           <br />
           {blogs.map((blog) => (
             <Blog key={blog.id} blog={blog} />
