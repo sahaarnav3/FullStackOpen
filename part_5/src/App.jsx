@@ -9,9 +9,6 @@ const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
   const [user, setUser] = useState();
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -62,20 +59,6 @@ const App = () => {
     window.location.reload();
   };
 
-  const createFormHandler = async (e) => {
-    e.preventDefault();
-    try {
-      const blogResponse = await blogService.create({ title, author, url });
-      setBlogs(blogs.concat(blogResponse));
-      setSuccessMessage(`a new blog ${title} added`);
-      setTitle("");
-      setAuthor("");
-      setUrl("");
-    } catch {
-      setErrorMessage("Blog Adding Failed");
-    }
-  };
-
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <h1>log in to application</h1>
@@ -103,6 +86,24 @@ const App = () => {
     </form>
   );
 
+  const likeHandler = async (blogDetails) => {
+    const requestBody = { likes: blogDetails.likes + 1 };
+    const updateResponse = await blogService.update(
+      requestBody,
+      blogDetails.id,
+    );
+    if (updateResponse) {
+      setBlogs(
+        blogs.map((blog) =>
+          blog.id === blogDetails.id
+            ? { ...blog, likes: blogDetails.likes + 1 }
+            : blog,
+        ),
+      );
+      setSuccessMessage("Likes Updated");
+    } else setErrorMessage("Likes couldn't be updated");
+  };
+
   return (
     <div>
       <SuccessNotification message={successMessage} />
@@ -119,13 +120,10 @@ const App = () => {
           <div>
             {blogToggle ? (
               <BlogForm
-                createFormHandler={createFormHandler}
-                title={title}
-                setTitle={setTitle}
-                author={author}
-                setAuthor={setAuthor}
-                url={url}
-                setUrl={setUrl}
+                blogs={blogs}
+                setBlogs={setBlogs}
+                setSuccessMessage={setSuccessMessage}
+                setErrorMessage={setErrorMessage}
               />
             ) : (
               ""
@@ -140,7 +138,7 @@ const App = () => {
           </div>
           <br />
           {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} />
+            <Blog key={blog.id} blog={blog} likeHandler={likeHandler} />
           ))}
         </div>
       )}
