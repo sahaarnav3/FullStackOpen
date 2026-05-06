@@ -1,51 +1,51 @@
-import { useState } from "react";
+import { useState } from 'react'
 
 const Blog = ({ blog, likeHandler, deleteHandler, user }) => {
-  const [showDetails, setShowDetails] = useState(false);
+  const [showDetails, setShowDetails] = useState(false)
 
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
-    border: "solid",
+    border: 'solid',
     borderWidth: 1,
     marginBottom: 5,
     paddingBottom: 5,
-  };
+  }
 
   return (
     <div style={blogStyle}>
       <div>
         <span>
-          {blog.title} {blog.author}{" "}
+          {blog.title} {blog.author}{' '}
         </span>
         <button onClick={() => setShowDetails(!showDetails)}>
-          {showDetails ? "hide" : "view"}
+          {showDetails ? 'hide' : 'view'}
         </button>
         {showDetails ? (
           <div>
             <div>{blog.url}</div>
             <div>
-              {blog.likes}{" "}
+              {blog.likes}{' '}
               <button onClick={() => likeHandler(blog)}>like</button>
             </div>
             <div>{blog.user.name}</div>
             {blog.user.name === user.name ? (
               <button
-                style={{ backgroundColor: "pink", borderRadius: "5px" }}
+                style={{ backgroundColor: 'pink', borderRadius: '5px' }}
                 onClick={() => deleteHandler(blog)}
               >
                 remove
               </button>
             ) : (
-              ""
+              ''
             )}
           </div>
         ) : (
-          ""
+          ''
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Blog;
+export default Blog
