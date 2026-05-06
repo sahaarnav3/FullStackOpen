@@ -15,7 +15,9 @@ const App = () => {
   const [blogToggle, setBlogToggle] = useState(false);
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
+    blogService
+      .getAll()
+      .then((blogs) => setBlogs(blogs.sort((a, b) => b.likes - a.likes)));
   }, []);
 
   useEffect(() => {
@@ -94,14 +96,32 @@ const App = () => {
     );
     if (updateResponse) {
       setBlogs(
-        blogs.map((blog) =>
-          blog.id === blogDetails.id
-            ? { ...blog, likes: blogDetails.likes + 1 }
-            : blog,
-        ),
+        blogs
+          .map((blog) =>
+            blog.id === blogDetails.id
+              ? { ...blog, likes: blogDetails.likes + 1 }
+              : blog,
+          )
+          .sort((a, b) => b.likes - a.likes),
       );
       setSuccessMessage("Likes Updated");
     } else setErrorMessage("Likes couldn't be updated");
+  };
+
+  const deleteHandler = async (blogDetails) => {
+    const confirm = window.confirm(
+      `Remove blog ${blogDetails.title} by ${blogDetails.author}`,
+    );
+    if (!confirm) return;
+    const response = await blogService.deleteBlog(blogDetails.id);
+    if (response.status === 204) {
+      setBlogs(
+        blogs
+          .filter((blog) => blog.id !== blogDetails.id)
+          .sort((a, b) => b.likes - a.likes),
+      );
+      setSuccessMessage("Blog Deleted");
+    } else setErrorMessage("Blog couldn't be deleted");
   };
 
   return (
@@ -138,7 +158,13 @@ const App = () => {
           </div>
           <br />
           {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} likeHandler={likeHandler} />
+            <Blog
+              key={blog.id}
+              blog={blog}
+              likeHandler={likeHandler}
+              deleteHandler={deleteHandler}
+              user={user}
+            />
           ))}
         </div>
       )}
