@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
+import loginService from './services/login'
 import ErrorNotification from './components/ErrorNotification'
 import SuccessNotification from './components/SuccessNotification'
 import BlogForm from './components/BlogForm'
@@ -42,7 +43,7 @@ const App = () => {
   const handleLogin = async (e) => {
     e.preventDefault()
     try {
-      const userResponse = await blogService.login({ username, password })
+      const userResponse = await loginService.login({ username, password })
       setUser(userResponse)
       blogService.setToken(userResponse.token)
       window.localStorage.setItem(

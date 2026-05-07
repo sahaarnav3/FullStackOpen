@@ -13,7 +13,7 @@ const Blog = ({ blog, likeHandler, deleteHandler, user }) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div className='blog' style={blogStyle}>
       <div>
         <span>
           {blog.title} {blog.author}{' '}
@@ -22,7 +22,7 @@ const Blog = ({ blog, likeHandler, deleteHandler, user }) => {
           {showDetails ? 'hide' : 'view'}
         </button>
         {showDetails ? (
-          <div>
+          <div className='blog-details'>
             <div>{blog.url}</div>
             <div>
               {blog.likes}{' '}
