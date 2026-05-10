@@ -1,5 +1,7 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
 
+test.describe.configure({ mode: 'serial' }) //to run tests one after another and not parallely 
+
 describe('Blog App', () => {
     beforeEach(async ({ page, request }) => {
         await request.post('http://localhost:3001/api/testing/reset')
@@ -115,18 +117,52 @@ describe('Blog App', () => {
 
             const blogElement = page.getByText('My Private Blog Author123').locator('..')
             await blogElement.getByRole('button', { name: 'view' }).click()
-            await expect(blogElement.getByRole('button', { name: 'remove'})).toBeVisible()
+            await expect(blogElement.getByRole('button', { name: 'remove' })).toBeVisible()
 
-            await page.getByRole('button', {name: 'logout'}).click()
+            await page.getByRole('button', { name: 'logout' }).click()
 
             await page.locator('input[type=text]').fill('otheruser')
             await page.locator('input[type=password]').fill('otherpassword')
             await page.getByRole('button', { name: 'Login' }).click()
 
             const otherBlogElement = page.getByText('My Private Blog Author123').locator('..')
-            await otherBlogElement.getByRole('button', {name: 'view'}).click()
+            await otherBlogElement.getByRole('button', { name: 'view' }).click()
 
-            await expect(otherBlogElement.getByRole('button', {name: 'remove'})).not.toBeVisible()
+            await expect(otherBlogElement.getByRole('button', { name: 'remove' })).not.toBeVisible()
+        })
+
+        test('blogs are ordered in descending order of likes', async ({ page, request }) => {
+            // Get the token from the browser's localStorage
+            const userJSON = await page.evaluate(() =>
+                JSON.parse(window.localStorage.getItem('loggedBlogAppUser'))
+            )
+            const token = userJSON.token
+
+            const blogData = [
+                { title: "Least Likes", author: 'Author C', url: 'http://c.com', likes: 1 },
+                { title: "Most Likes", author: 'Author A', url: 'http://a.com', likes: 6 },
+                { title: "Mid Likes", author: 'Author B', url: 'http://b.com', likes: 3 },
+            ]
+
+            for (const blog of blogData) {
+                await request.post('http://localhost:3001/api/blogs', {
+                    data: blog,
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+            }
+
+            await page.reload()
+
+            // Wait for proof that the session survived
+            // This ensures the useEffect has finished and the 'logout' button is back
+            await expect(page.getByRole('button', { name: 'logout' })).toBeVisible()
+
+            const blogLocators = page.locator('.blog')
+
+            await expect(blogLocators.nth(0)).toContainText('Most Likes')
+            await expect(blogLocators.nth(1)).toContainText('Mid Likes')
+            await expect(blogLocators.nth(2)).toContainText('Least Likes')
+
         })
     })
 })
