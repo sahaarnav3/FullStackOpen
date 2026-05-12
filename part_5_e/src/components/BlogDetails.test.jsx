@@ -1,10 +1,9 @@
 
 import { render, screen } from '@testing-library/react'
-import { test, expect, vi } from 'vitest'
+import { test, expect } from 'vitest'
 import BlogDetails from './BlogDetails'
-import userEvent from '@testing-library/user-event'
 
-test('renders title and author, but not URL or likes by default', () => {
+test('renders complete blog information to unauthenticated users (Without buttons)', () => {
   const blog = {
     title: 'Component testing is done with react-testing-library',
     author: 'Test Author',
@@ -13,72 +12,87 @@ test('renders title and author, but not URL or likes by default', () => {
     user: { name: 'Test User' }
   }
 
-  const user = { name: 'Test User' }
-
-  const { container } = render(<BlogDetails blog={blog} user={user} />)
+  const { container } = render(<BlogDetails blog={blog} />)
 
   const element = screen.getByText(/Component testing is done with react-testing-library/i )
   expect(element).toBeDefined()
 
   const details = container.querySelector('.blog-details')
-  expect(details).toBeNull()
+  expect(details).not.toBeNull()
 
   const url = screen.queryByText('http://testurl.com')
-  expect(url).toBeNull()
+  expect(url).not.toBeNull()
 
-  const likes = screen.queryByText('5')
-  expect(likes).toBeNull()
+  const likes = screen.queryByText('likes 5')
+  expect(likes).not.toBeNull()
+
+  const likeButton = screen.queryByText('like')
+  expect(likeButton).toBeNull()
+
+  const removeButton = screen.queryByText('remove')
+  expect(removeButton).toBeNull()
 })
 
-test('clicking the view button displays URL and likes', async() => {
+test('Authenticated users who are not the blog’s creator are shown only the like button', async() => {
   const blog = {
     title: 'Component testing is done with react-testing-library',
     author: 'Test Author',
     url: 'http://testurl.com',
     likes: 5,
-    user: { name: 'Test User' }
+    user: { name: 'Test User', username: 'testUsername' }
   }
 
-  const user = { name: 'Test User' }
-
-  const session = userEvent.setup()
+  const user = { name: 'Test User 2', username: 'username2' }
   const { container } = render(<BlogDetails blog={blog} user={user} />)
 
-  const button = screen.getByText('view')
-  await session.click(button)
+
+  const element = screen.getByText(/Component testing is done with react-testing-library/i )
+  expect(element).toBeDefined()
 
   const details = container.querySelector('.blog-details')
   expect(details).not.toBeNull()
 
-  expect(screen.getByText('http://testurl.com')).toBeDefined()
-  expect(screen.getByText('5', { exact: false })).toBeDefined()
+  const url = screen.queryByText('http://testurl.com')
+  expect(url).not.toBeNull()
+
+  const likes = screen.queryByText('likes 5')
+  expect(likes).not.toBeNull()
+
+  const likeButton = screen.queryByText('like')
+  expect(likeButton).not.toBeNull()
+
+  const removeButton = screen.queryByText('remove')
+  expect(removeButton).toBeNull()
 })
 
-test('if the like button is clicked twice, the event handler is called twice', async() => {
+test('The blog’s creator is also shown the delete button', async() => {
   const blog = {
-    title: 'Testing like button clicks',
+    title: 'Component testing is done with react-testing-library',
     author: 'Test Author',
     url: 'http://testurl.com',
     likes: 5,
-    user: { name: 'Test User' }
+    user: { name: 'Test User', username: 'testusername' }
   }
 
-  const user = { name: 'Test User' }
+  const user = { name: 'Test User', username: 'testusername' }
+  const { container } = render(<BlogDetails blog={blog} user={user} />)
 
-  const mockHandler = vi.fn()
-  const session = userEvent.setup()
 
-  render(
-    <BlogDetails blog={blog} user={user} likeHandler={mockHandler} />
-  )
+  const element = screen.getByText(/Component testing is done with react-testing-library/i )
+  expect(element).toBeDefined()
 
-  const viewButton = screen.getByText('view')
-  await session.click(viewButton)
+  const details = container.querySelector('.blog-details')
+  expect(details).not.toBeNull()
 
-  const likeButton = screen.getByText('like')
+  const url = screen.queryByText('http://testurl.com')
+  expect(url).not.toBeNull()
 
-  await session.click(likeButton)
-  await session.click(likeButton)
+  const likes = screen.queryByText('likes 5')
+  expect(likes).not.toBeNull()
 
-  expect(mockHandler.mock.calls).toHaveLength(2)
+  const likeButton = screen.queryByText('like')
+  expect(likeButton).not.toBeNull()
+
+  const removeButton = screen.queryByText('remove')
+  expect(removeButton).not.toBeNull()
 })

@@ -2,11 +2,11 @@
 const BlogDetails = ({ blog, likeHandler, deleteHandler, user }) => {
 
   return (
-    <div>
+    blog && <div>
       <div className='blog-details'>
         <h1>{blog.title}</h1>
         <br />
-        <a>{blog.url}</a>
+        <a href={blog.url} target="_blank">{blog.url}</a>
         <div>
           likes {blog.likes}{' '}
           {user && <button onClick={() => likeHandler(blog)}>like</button>}

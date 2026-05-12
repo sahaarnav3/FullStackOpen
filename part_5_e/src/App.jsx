@@ -47,6 +47,7 @@ const App = () => {
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogAppUser')
     window.location.reload()
+    navigate('/')
   }
 
   const likeHandler = async (blogDetails) => {
