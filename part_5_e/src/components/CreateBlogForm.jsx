@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import blogService from '../services/blogs'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
 
 export default function CreateBlogForm({
   blogs,
@@ -32,36 +34,33 @@ export default function CreateBlogForm({
     <form onSubmit={createFormHandler}>
       <h1>create new</h1>
       <div>
-        <label>
-          title:
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </label>
+        <TextField
+          label="title"
+          variant="outlined"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          sx={{ width: '50%' }}
+        />
       </div>
       <div>
-        <label>
-          author:
-          <input
-            type="text"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-          />
-        </label>
+        <TextField
+          label="author"
+          variant="outlined"
+          value={author}
+          onChange={(e) => setAuthor(e.target.value)}
+          sx={{ marginTop: '15px', width: '50%' }}
+        />
       </div>
       <div>
-        <label>
-          url:
-          <input
-            type="text"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-          />
-        </label>
+        <TextField
+          label="url"
+          variant="outlined"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          sx={{ marginTop: '15px', width: '50%' }}
+        />
       </div>
-      <button type="submit">Create</button>
+      <Button variant="contained" type='submit' sx={{ marginTop: '15px' }}>CREATE</Button>
     </form>
   )
 }

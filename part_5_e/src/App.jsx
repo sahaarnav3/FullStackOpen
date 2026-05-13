@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Routes, Route, Link, useMatch, useNavigate } from 'react-router-dom'
+import { Container, AppBar, Box, Toolbar, Typography, Button } from '@mui/material'
+
 import BlogDetails from './components/BlogDetails'
 import blogService from './services/blogs'
 import ErrorNotification from './components/ErrorNotification'
@@ -46,8 +48,8 @@ const App = () => {
 
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogAppUser')
-    window.location.reload()
     navigate('/')
+    window.location.reload()
   }
 
   const likeHandler = async (blogDetails) => {
@@ -89,52 +91,57 @@ const App = () => {
   }
 
   return (
-    <>
-      <div>
-        <Link style={{ padding: 5 }} to='/'>blogs</Link>
-        <Link style={{ padding: 5 }} to='/create'>new blog</Link>
-        {user ? (
-          <button onClick={handleLogout}>logout</button>
-        ) : (
-          <Link style={{ padding: 5 }} to='/login'>login</Link>
-        )}
-        <SuccessNotification message={successMessage} />
+    <Container>
+      <>
+        <Box sx={{ flexGrow: 1 }}>
+          <AppBar position="static">
+            <Toolbar>
+              <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
+                Blog App
+              </Typography>
+              <Button color="inherit" sx={{ fontSize: '16px' }}><Link to='/' style={{ color: 'white', textDecoration: 'none' }}>BLOGS</Link></Button>
+              <Button color="inherit" sx={{ fontSize: '16px' }}><Link to='/create' style={{ color: 'white', textDecoration: 'none' }}>NEW BLOG</Link></Button>
+              {user ? (<Button color="inherit" onClick={() => handleLogout()} sx={{ fontSize: '16px' }}>LOGOUT</Button>) : (<Button color="inherit" sx={{ fontSize: '16px' }}><Link to='/login' style={{ color: 'white', textDecoration: 'none' }}>LOGIN</Link></Button>)}
+            </Toolbar>
+          </AppBar>
+        </Box>
+        <SuccessNotification message={successMessage}/>
         <ErrorNotification message={errorMessage} />
-      </div>
 
-      <Routes>
-        <Route path='/' element={
-          <Home
-            blogs={blogs}
-            user={user}
-            likeHandler={likeHandler}
-            deleteHandler={deleteHandler}
-          />} />
-        <Route path='/login' element={
-          <Login
-            user={user}
-            setUser={setUser}
-            setErrorMessage={setErrorMessage}
-          />} />
-        <Route path='/create' element={
-          <CreateBlogForm
-            blogs={blogs}
-            setBlogs={setBlogs}
-            setSuccessMessage={setSuccessMessage}
-            setErrorMessage={setErrorMessage}
-            user={user}
-          />
-        } />
-        <Route path='/blog-details/:id' element={
-          <BlogDetails
-            blog={blog}
-            likeHandler={likeHandler}
-            deleteHandler={deleteHandler}
-            user={user}
-          />
-        } />
-      </Routes>
-    </>
+        <Routes>
+          <Route path='/' element={
+            <Home
+              blogs={blogs}
+              user={user}
+              likeHandler={likeHandler}
+              deleteHandler={deleteHandler}
+            />} />
+          <Route path='/login' element={
+            <Login
+              user={user}
+              setUser={setUser}
+              setErrorMessage={setErrorMessage}
+            />} />
+          <Route path='/create' element={
+            <CreateBlogForm
+              blogs={blogs}
+              setBlogs={setBlogs}
+              setSuccessMessage={setSuccessMessage}
+              setErrorMessage={setErrorMessage}
+              user={user}
+            />
+          } />
+          <Route path='/blog-details/:id' element={
+            <BlogDetails
+              blog={blog}
+              likeHandler={likeHandler}
+              deleteHandler={deleteHandler}
+              user={user}
+            />
+          } />
+        </Routes>
+      </>
+    </Container>
   )
 }
 

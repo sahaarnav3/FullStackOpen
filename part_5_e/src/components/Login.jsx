@@ -3,6 +3,10 @@ import loginService from '../services/login'
 import blogService from '../services/blogs'
 import { useNavigate, Navigate } from 'react-router-dom'
 
+import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
+
 const Login = ({ user, setUser, setErrorMessage }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -32,28 +36,33 @@ const Login = ({ user, setUser, setErrorMessage }) => {
 
   return(
     <form onSubmit={handleLogin}>
-      <h1>log in to application</h1>
+      <h1>Log in to application</h1>
       <div>
-        <label>
-                  username
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </label>
+        <TextField label="username" value={username} onChange={(e) => setUsername(e.target.value)} variant="standard"
+          sx={{
+            '& .MuiInput-root': {
+              fontSize: '1.4rem', // Increases input and placeholder size
+            },
+            '& .MuiInputLabel-root': {
+              fontSize: '1.1rem', // Increases floating label size
+            }
+          }}
+        />
       </div>
       <div>
-        <label>
-                  password
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </label>
+        <TextField label="password" type='password' value={password} onChange={(e) => setPassword(e.target.value)} variant="standard"
+          sx={{
+            '& .MuiInput-root': {
+              fontSize: '1.4rem', // Increases input and placeholder size
+            },
+            '& .MuiInputLabel-root': {
+              fontSize: '1.1rem', // Increases floating label size
+            },
+            marginTop: '15px'
+          }}
+        />
       </div>
-      <button type="submit">Login</button>
+      <Button variant="contained" type='submit' sx={{ marginTop: '15px' }}>LOGIN</Button>
     </form>
   )
 }
