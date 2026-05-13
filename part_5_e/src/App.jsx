@@ -122,6 +122,7 @@ const App = () => {
             setBlogs={setBlogs}
             setSuccessMessage={setSuccessMessage}
             setErrorMessage={setErrorMessage}
+            user={user}
           />
         } />
         <Route path='/blog-details/:id' element={

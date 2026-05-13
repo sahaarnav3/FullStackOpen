@@ -6,6 +6,7 @@ export default function CreateBlogForm({
   setBlogs,
   setSuccessMessage,
   setErrorMessage,
+  user
 }) {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
@@ -21,6 +22,8 @@ export default function CreateBlogForm({
       setAuthor('')
       setUrl('')
     } catch {
+      if(!user)
+        return setErrorMessage('Please login first to create blog')
       setErrorMessage('Blog Adding Failed')
     }
   }
