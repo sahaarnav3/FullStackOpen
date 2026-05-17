@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { useAnecdoteActions } from "../store";
+import { useNotificationActions } from '../notificationStore'
 
 export default function AnecdoteForm() {
-  const [newAnecdote, setNewAnecdote] = useState("");
-  const { addNewAnecdote } = useAnecdoteActions();
+  const [newAnecdote, setNewAnecdote] = useState("")
+  const { addNewAnecdote } = useAnecdoteActions()
+  const { setMessage } = useNotificationActions()
 
   function formHandler(e) {
-    e.preventDefault();
-    addNewAnecdote(newAnecdote);
-    setNewAnecdote("");
+    e.preventDefault()
+    addNewAnecdote(newAnecdote)
+    setMessage(`Anecdote '${newAnecdote}' Added`)
+    setNewAnecdote('')
   }
 
   return (
