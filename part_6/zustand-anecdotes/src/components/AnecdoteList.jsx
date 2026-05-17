@@ -1,7 +1,7 @@
-import { useAnecdotes, useAnecdoteActions } from "../store";
+import { useFilteredAnecdotes, useAnecdoteActions } from "../store";
 
 export default function AnecdoteList() {
-  const anecdotes = useAnecdotes();
+  const anecdotes = useFilteredAnecdotes();
   const sortedAnecdotes = anecdotes.toSorted((a, b) => b.votes - a.votes)
   const { voteIncrement } = useAnecdoteActions();
 
