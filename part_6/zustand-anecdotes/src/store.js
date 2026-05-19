@@ -1,5 +1,5 @@
-
 import { create } from 'zustand'
+import { useShallow } from 'zustand/react/shallow'
 import anecdoteService from './services/anecdotes'
 
 const useAnecdoteStore = create((set, get) => ({
@@ -50,5 +50,6 @@ const useAnecdoteStore = create((set, get) => ({
 }))
 
 export const useAnecdotes = () => useAnecdoteStore((state) => state.anecdotes)
-export const useFilteredAnecdotes = () => useAnecdoteStore((state) => state.filteredAnecdotes)
+export const useFilteredAnecdotes = () => useAnecdoteStore(useShallow((state) => state.filteredAnecdotes.toSorted((a, b) => b.votes - a.votes)))
 export const useAnecdoteActions = () => useAnecdoteStore((state) => state.actions)
+export default useAnecdoteStore;

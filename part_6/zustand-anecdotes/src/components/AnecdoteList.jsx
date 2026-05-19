@@ -3,7 +3,6 @@ import { useNotificationActions } from '../notificationStore'
 
 export default function AnecdoteList() {
   const anecdotes = useFilteredAnecdotes();
-  const sortedAnecdotes = anecdotes.toSorted((a, b) => b.votes - a.votes)
   const { voteIncrement, deleteAnecdote } = useAnecdoteActions();
   const { setMessage } = useNotificationActions()
 
@@ -23,7 +22,7 @@ export default function AnecdoteList() {
 
   return (
     <div>
-      {sortedAnecdotes.map((anecdote) => (
+      {anecdotes.map((anecdote) => (
         <div key={anecdote.id}>
           <div>{anecdote.content}</div>
           <div>
