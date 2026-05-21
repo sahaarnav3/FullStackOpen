@@ -2,12 +2,17 @@ import AnecdoteForm from './components/AnecdoteForm'
 import Notification from './components/Notification'
 import { useAnecdotes } from './hooks/useAnecdotes'
 
+import { useContext } from "react"
+import NotificationContext from "./NotificationContext"
+
 
 const App = () => {
   const { anecdotes, isPending, isError, newNoteMutation, updateAnecdoteMutation} = useAnecdotes()
+  const { notification, setNotification } = useContext(NotificationContext)
 
   const handleVote = (anecdote) => {
     updateAnecdoteMutation.mutate(anecdote)
+    setNotification(`anecdote '${anecdote.content}' voted`)
   }
 
   if (isError)
@@ -20,7 +25,7 @@ const App = () => {
     <div>
       <h3>Anecdote app</h3>
 
-      <Notification />
+      { notification && <Notification message={notification} />}
       <AnecdoteForm newNoteMutation={newNoteMutation} />
 
       {anecdotes.map((anecdote) => (
