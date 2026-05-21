@@ -1,8 +1,7 @@
-import { useContext } from "react"
-import NotificationContext from "../NotificationContext"
+import useNotify from "../hooks/useNotify"
 
 const AnecdoteForm = ({ newNoteMutation }) => {
-  const { setNotification } = useContext(NotificationContext)
+  const { setNotification } = useNotify()
 
   const onCreate = (event) => {
     event.preventDefault()
