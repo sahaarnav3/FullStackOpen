@@ -6,10 +6,12 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import { useNotificationActions } from '../stores/NotificationStore';
 
-const Login = ({ user, setUser, setErrorMessage }) => {
+const Login = ({ user, setUser }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const { setNotificationMessage } = useNotificationActions();
   const navigate = useNavigate();
 
   if (user) return <Navigate to="/" replace />;
@@ -28,7 +30,7 @@ const Login = ({ user, setUser, setErrorMessage }) => {
       setPassword('');
       navigate('/');
     } catch {
-      setErrorMessage('Wrong username or password');
+      setNotificationMessage('Wrong username or password', 'error');
     }
   };
 

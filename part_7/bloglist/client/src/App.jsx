@@ -9,23 +9,27 @@ import {
   Button,
 } from '@mui/material';
 import { ErrorBoundary } from 'react-error-boundary';
+import {
+  useNotificationData,
+  useNotificationActions,
+} from './stores/NotificationStore';
 
 import BlogDetails from './components/BlogDetails';
-import blogService from './services/blogs';
-import ErrorNotification from './components/ErrorNotification';
-import SuccessNotification from './components/SuccessNotification';
 import CreateBlogForm from './components/CreateBlogForm';
 import FallbackComponent from './components/FallbackComponent';
-
 import Home from './components/Home';
 import Login from './components/Login';
+import Notification from './components/Notification';
+
+import blogService from './services/blogs';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
   const navigate = useNavigate();
+
+  const { message, severity } = useNotificationData();
+  const { setNotificationMessage } = useNotificationActions();
 
   const match = useMatch('/blog-details/:id');
   const blog = match ? blogs.find((blog) => blog.id === match.params.id) : null;
@@ -35,16 +39,6 @@ const App = () => {
       .getAll()
       .then((blogs) => setBlogs(blogs.sort((a, b) => b.likes - a.likes)));
   }, []);
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setSuccessMessage(null);
-      setErrorMessage(null);
-    }, 4000);
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [successMessage, errorMessage]);
 
   useEffect(() => {
     const loggedUserJson = window.localStorage.getItem('loggedBlogAppUser');
@@ -77,8 +71,8 @@ const App = () => {
           )
           .sort((a, b) => b.likes - a.likes)
       );
-      setSuccessMessage('Likes Updated');
-    } else setErrorMessage("Likes couldn't be updated");
+      setNotificationMessage('Likes Updated', 'success');
+    } else setNotificationMessage("Likes couldn't be updated");
   };
 
   const deleteHandler = async (blogDetails) => {
@@ -95,8 +89,8 @@ const App = () => {
       );
 
       navigate('/');
-      setSuccessMessage('Blog Deleted');
-    } else setErrorMessage("Blog couldn't be deleted");
+      setNotificationMessage('Blog Deleted', 'success');
+    } else setNotificationMessage("Blog can't be deleted", 'error');
   };
 
   return (
@@ -142,9 +136,7 @@ const App = () => {
             </Toolbar>
           </AppBar>
         </Box>
-        <SuccessNotification message={successMessage} />
-        <ErrorNotification message={errorMessage} />
-
+        <Notification />
         <ErrorBoundary FallbackComponent={FallbackComponent}>
           <Routes>
             <Route
@@ -164,7 +156,6 @@ const App = () => {
                 <Login
                   user={user}
                   setUser={setUser}
-                  setErrorMessage={setErrorMessage}
                 />
               }
             />
@@ -174,8 +165,6 @@ const App = () => {
                 <CreateBlogForm
                   blogs={blogs}
                   setBlogs={setBlogs}
-                  setSuccessMessage={setSuccessMessage}
-                  setErrorMessage={setErrorMessage}
                   user={user}
                 />
               }
