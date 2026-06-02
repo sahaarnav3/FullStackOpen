@@ -1,8 +1,8 @@
-import Blog from './BlogDetails'
-import { useNavigate } from 'react-router-dom'
+import Blog from './BlogDetails';
+import { useNavigate } from 'react-router-dom';
 
 export default function Home({ blogs }) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const blogStyle = {
     paddingTop: 10,
@@ -11,13 +11,13 @@ export default function Home({ blogs }) {
     borderWidth: 1,
     marginBottom: 5,
     paddingBottom: 5,
-  }
+  };
 
-  return(
+  return (
     <div>
       <h1>blogs</h1>
       {blogs.map((blog) => (
-        <div className='blog' style={blogStyle} key={blog.id}>
+        <div className="blog" style={blogStyle} key={blog.id}>
           <div>
             <span>
               {blog.title} {blog.author}{' '}
@@ -27,8 +27,7 @@ export default function Home({ blogs }) {
             </button>
           </div>
         </div>
-
       ))}
     </div>
-  )
+  );
 }

@@ -1,5 +1,5 @@
-const Blog = require('../models/blog')
-const User = require('../models/user')
+const Blog = require('../models/blog');
+const User = require('../models/user');
 
 const initialBlogs = [
   {
@@ -23,7 +23,7 @@ const initialBlogs = [
     url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
     likes: 12,
   },
-]
+];
 
 const newBlog = {
   _id: '5a422bc61b54a676234d17fc',
@@ -31,33 +31,41 @@ const newBlog = {
   author: 'Robert C. Martin',
   url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
   likes: 2,
-}
+};
 
 const blogWithoutLike = {
   _id: '5a422ba71b54a676234d17fb',
   title: 'TDD harms architecture',
   author: 'Robert C. Martin',
   url: 'http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html',
-}
+};
 
 const blogWithoutTitle = {
   author: 'Robert C. Martin',
   url: 'http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html',
-}
+};
 
 const blogWithoutUrl = {
   title: 'TDD harms architecture',
   author: 'Robert C. Martin',
-}
+};
 
-const blogsInDb = async() => {
-  const blogs = await Blog.find({})
-  return blogs.map(blog => blog.toJSON())
-}
+const blogsInDb = async () => {
+  const blogs = await Blog.find({});
+  return blogs.map((blog) => blog.toJSON());
+};
 
 const usersInDb = async () => {
-  const users = await User.find({})
-  return users.map(user => user.toJSON())
-}
+  const users = await User.find({});
+  return users.map((user) => user.toJSON());
+};
 
-module.exports = { initialBlogs, newBlog, blogsInDb, blogWithoutLike, blogWithoutTitle, blogWithoutUrl, usersInDb }
+module.exports = {
+  initialBlogs,
+  newBlog,
+  blogsInDb,
+  blogWithoutLike,
+  blogWithoutTitle,
+  blogWithoutUrl,
+  usersInDb,
+};
