@@ -8,8 +8,34 @@ import {
   Box,
 } from '@mui/material';
 
-const BlogDetails = ({ blog, likeHandler, deleteHandler, user }) => {
+import { useBloglistActions } from '../stores/bloglistStore';
+import { useNotificationActions } from '../stores/NotificationStore';
+import { useNavigate } from 'react-router-dom';
+
+const BlogDetails = ({ blog, user }) => {
+  const { updateBlogLike, deleteBlog } = useBloglistActions();
+  const { setNotificationMessage } = useNotificationActions();
+  const navigate = useNavigate();
+
   if (!blog) return <h1>404 - Blog Not Found</h1>;
+
+  function updateBlogHandler(blog) {
+    if (updateBlogLike(blog))
+      setNotificationMessage('Likes Updated', 'success');
+    else setNotificationMessage("Likes couldn't be updated", 'error');
+  }
+
+  function deleteBlogHandler(blog) {
+    const confirm = window.confirm(
+      `Remove blog ${blog.title} by ${blog.author}`
+    );
+    if (!confirm) return;
+    if (deleteBlog(blog)) {
+      setNotificationMessage('Blog Deleted', 'success');
+      navigate('/');
+    } else setNotificationMessage("Blog can't be deleted", 'error');
+  }
+
   return (
     blog && (
       <Card
@@ -73,7 +99,7 @@ const BlogDetails = ({ blog, likeHandler, deleteHandler, user }) => {
                   backgroundColor: '#f0f7ff',
                 },
               }}
-              onClick={() => likeHandler(blog)}
+              onClick={() => updateBlogHandler(blog)}
             >
               LIKE
             </Button>
@@ -91,7 +117,7 @@ const BlogDetails = ({ blog, likeHandler, deleteHandler, user }) => {
                   backgroundColor: '#ffebee',
                 },
               }}
-              onClick={() => deleteHandler(blog)}
+              onClick={() => deleteBlogHandler(blog)}
               disabled={blog.user.username === user.username ? '' : 'disabled'}
             >
               REMOVE

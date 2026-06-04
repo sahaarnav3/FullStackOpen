@@ -3,28 +3,29 @@ import blogService from '../services/blogs';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { useNotificationActions } from '../stores/NotificationStore';
+import { useBloglistActions } from '../stores/bloglistStore';
 
-export default function CreateBlogForm({
-  blogs,
-  setBlogs,
-  user,
-}) {
+export default function CreateBlogForm({ user }) {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
   const { setNotificationMessage } = useNotificationActions();
+  const { addNewBlog } = useBloglistActions();
 
   const createFormHandler = async (e) => {
     e.preventDefault();
+    if (!user)
+      return setNotificationMessage(
+        'Please login first to create blog',
+        'error'
+      );
     try {
-      const blogResponse = await blogService.create({ title, author, url });
-      setBlogs(blogs.concat(blogResponse));
-      setNotificationMessage(`a new blog ${title} added`, 'success');
+      if (addNewBlog({ title, author, url }))
+        setNotificationMessage(`a new blog ${title} added`, 'success');
       setTitle('');
       setAuthor('');
       setUrl('');
     } catch {
-      if (!user) return setNotificationMessage('Please login first to create blog', 'error');
       setNotificationMessage('Blog Adding Failed', 'error');
     }
   };

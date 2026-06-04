@@ -1,8 +1,11 @@
 import Blog from './BlogDetails';
 import { useNavigate } from 'react-router-dom';
+import { useBloglistData } from '../stores/bloglistStore';
+import { useEffect } from 'react';
 
-export default function Home({ blogs }) {
+export default function Home() {
   const navigate = useNavigate();
+  const { blogs } = useBloglistData();
 
   const blogStyle = {
     paddingTop: 10,

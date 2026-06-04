@@ -23,22 +23,22 @@ import Notification from './components/Notification';
 
 import blogService from './services/blogs';
 
+import { useBloglistData, useBloglistActions } from './stores/bloglistStore';
+
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
-
   const { message, severity } = useNotificationData();
   const { setNotificationMessage } = useNotificationActions();
+  const { blogs } = useBloglistData();
+  const { initialize } = useBloglistActions();
+
+  useEffect(() => {
+    initialize();
+  }, []);
 
   const match = useMatch('/blog-details/:id');
   const blog = match ? blogs.find((blog) => blog.id === match.params.id) : null;
-
-  useEffect(() => {
-    blogService
-      .getAll()
-      .then((blogs) => setBlogs(blogs.sort((a, b) => b.likes - a.likes)));
-  }, []);
 
   useEffect(() => {
     const loggedUserJson = window.localStorage.getItem('loggedBlogAppUser');
@@ -53,44 +53,6 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogAppUser');
     navigate('/');
     window.location.reload();
-  };
-
-  const likeHandler = async (blogDetails) => {
-    const requestBody = { likes: blogDetails.likes + 1 };
-    const updateResponse = await blogService.update(
-      requestBody,
-      blogDetails.id
-    );
-    if (updateResponse) {
-      setBlogs(
-        blogs
-          .map((blog) =>
-            blog.id === blogDetails.id
-              ? { ...blog, likes: blogDetails.likes + 1 }
-              : blog
-          )
-          .sort((a, b) => b.likes - a.likes)
-      );
-      setNotificationMessage('Likes Updated', 'success');
-    } else setNotificationMessage("Likes couldn't be updated");
-  };
-
-  const deleteHandler = async (blogDetails) => {
-    const confirm = window.confirm(
-      `Remove blog ${blogDetails.title} by ${blogDetails.author}`
-    );
-    if (!confirm) return;
-    const response = await blogService.deleteBlog(blogDetails.id);
-    if (response.status === 204) {
-      setBlogs(
-        blogs
-          .filter((blog) => blog.id !== blogDetails.id)
-          .sort((a, b) => b.likes - a.likes)
-      );
-
-      navigate('/');
-      setNotificationMessage('Blog Deleted', 'success');
-    } else setNotificationMessage("Blog can't be deleted", 'error');
   };
 
   return (
@@ -139,46 +101,20 @@ const App = () => {
         <Notification />
         <ErrorBoundary FallbackComponent={FallbackComponent}>
           <Routes>
-            <Route
-              path="/"
-              element={
-                <Home
-                  blogs={blogs}
-                  user={user}
-                  likeHandler={likeHandler}
-                  deleteHandler={deleteHandler}
-                />
-              }
-            />
+            <Route path="/" element={<Home />} />
             <Route
               path="/login"
-              element={
-                <Login
-                  user={user}
-                  setUser={setUser}
-                />
-              }
+              element={<Login user={user} setUser={setUser} />}
             />
             <Route
               path="/create"
               element={
-                <CreateBlogForm
-                  blogs={blogs}
-                  setBlogs={setBlogs}
-                  user={user}
-                />
+                <CreateBlogForm user={user} />
               }
             />
             <Route
               path="/blog-details/:id"
-              element={
-                <BlogDetails
-                  blog={blog}
-                  likeHandler={likeHandler}
-                  deleteHandler={deleteHandler}
-                  user={user}
-                />
-              }
+              element={<BlogDetails blog={blog} user={user} />}
             />
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
           </Routes>

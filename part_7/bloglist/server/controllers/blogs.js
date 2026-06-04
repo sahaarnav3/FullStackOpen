@@ -61,7 +61,7 @@ blogRouter.put('/:id', async (req, res) => {
     req.params.id,
     { likes: likes },
     { returnDocument: 'after' }
-  );
+  ).populate('user', { username: 1, name: 1 });
   if (updatedBlog) return res.json(updatedBlog);
 });
 
