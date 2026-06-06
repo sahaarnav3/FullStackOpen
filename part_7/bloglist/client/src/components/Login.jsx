@@ -6,22 +6,27 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { useNotificationActions } from '../stores/NotificationStore';
 import { useUserStoreData, useUserStoreActions } from '../stores/userStore';
+import { useField } from '../hooks';
 
-const Login = ({ user, setUser }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+const Login = () => {
+  const { reset: resetUsername, ...username } = useField('text');
+  const { reset: resetPassword, ...password } = useField('password');
   const { setNotificationMessage } = useNotificationActions();
   const { loginUser } = useUserStoreActions();
+  const { user } = useUserStoreData();
   const navigate = useNavigate();
 
+  // if (user) return navigate('/'); // this is not the right way, we need to let the component completely render before changing the state.
+  //so we need to use useEffect so that the component completely finishes rendering or you can use the Navigate component. Navigate is better for this scenario.
   if (user) return <Navigate to="/" replace />;
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      if (!loginUser({ username, password })) throw new Error();
-      setUsername('');
-      setPassword('');
+      if (!loginUser({ username: username.value, password: password.value }))
+        throw new Error();
+      resetUsername;
+      resetPassword;
       navigate('/');
       setNotificationMessage('Successfully Logged In', 'success');
     } catch {
@@ -35,8 +40,7 @@ const Login = ({ user, setUser }) => {
       <div>
         <TextField
           label="username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          {...username}
           variant="standard"
           sx={{
             '& .MuiInput-root': {
@@ -51,9 +55,7 @@ const Login = ({ user, setUser }) => {
       <div>
         <TextField
           label="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          {...password}
           variant="standard"
           sx={{
             '& .MuiInput-root': {

@@ -5,10 +5,12 @@ import { useNotificationActions } from '../stores/NotificationStore';
 import { useBloglistActions } from '../stores/bloglistStore';
 import { useUserStoreData } from '../stores/userStore';
 
+import { useField } from '../hooks/index';
+
 export default function CreateBlogForm() {
-  const [title, setTitle] = useState('');
-  const [author, setAuthor] = useState('');
-  const [url, setUrl] = useState('');
+  const {reset: resetTitle, ...title} = useField('text')
+  const {reset: resetAuthor, ...author} = useField('text')
+  const {reset: resetUrl, ...url} = useField('text')
   const { setNotificationMessage } = useNotificationActions();
   const { addNewBlog } = useBloglistActions();
   const { user } = useUserStoreData();
@@ -21,11 +23,11 @@ export default function CreateBlogForm() {
         'error'
       );
     try {
-      if (addNewBlog({ title, author, url }))
-        setNotificationMessage(`a new blog ${title} added`, 'success');
-      setTitle('');
-      setAuthor('');
-      setUrl('');
+      if (addNewBlog({ title: title.value, author: author.value, url: url.value }))
+        setNotificationMessage(`a new blog ${title.value} added`, 'success');
+      resetTitle();
+      resetAuthor();
+      resetUrl();
     } catch {
       setNotificationMessage('Blog Adding Failed', 'error');
     }
@@ -38,8 +40,7 @@ export default function CreateBlogForm() {
         <TextField
           label="title"
           variant="outlined"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          {...title}
           sx={{ width: '50%' }}
         />
       </div>
@@ -47,8 +48,7 @@ export default function CreateBlogForm() {
         <TextField
           label="author"
           variant="outlined"
-          value={author}
-          onChange={(e) => setAuthor(e.target.value)}
+          {...author}
           sx={{ marginTop: '15px', width: '50%' }}
         />
       </div>
@@ -56,8 +56,7 @@ export default function CreateBlogForm() {
         <TextField
           label="url"
           variant="outlined"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
+          {...url}
           sx={{ marginTop: '15px', width: '50%' }}
         />
       </div>
