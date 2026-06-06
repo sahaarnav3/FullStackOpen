@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 import loginService from '../services/login';
+import persistentUserService from '../services/persistentUser';
 
 const useUserStore = create((set) => {
   return {
@@ -14,25 +15,21 @@ const useUserStore = create((set) => {
             user: userResponse,
             token: `Bearer ${userResponse.token}`,
           });
-          window.localStorage.setItem(
-            'loggedBlogAppUser',
-            JSON.stringify(userResponse)
-          );
+          persistentUserService.saveUser(userResponse);
           return true;
         }
         return false;
       },
       logoutUser: async () => {
-        window.localStorage.removeItem('loggedBlogAppUser');
+        persistentUserService.removeUser();
         set({
           user: null,
           token: '',
         });
       },
       checkUserPresent: async () => {
-        const loggedUserJson = window.localStorage.getItem('loggedBlogAppUser');
-        if (loggedUserJson) {
-          const user = JSON.parse(loggedUserJson);
+        const user = persistentUserService.getUser()
+        if (user) {
           set({
             user: user,
             token: `Bearer ${user.token}`,
