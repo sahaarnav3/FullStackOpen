@@ -1,11 +1,6 @@
 import axios from 'axios';
 const baseUrl = '/api/blogs';
-
-let token = null;
-
-const setToken = (newToken) => {
-  token = `Bearer ${newToken}`;
-};
+import useUserStore from '../stores/userStore';
 
 const getAll = async () => {
   const response = await axios.get(baseUrl);
@@ -13,15 +8,16 @@ const getAll = async () => {
 };
 
 const create = async (blogObject) => {
+  const token = useUserStore.getState().token;
   const config = {
     headers: { Authorization: token },
   };
-
   const response = await axios.post(baseUrl, blogObject, config);
   return response.data;
 };
 
 const update = async (blogObject, blogId) => {
+  const token = useUserStore.getState().token;
   const config = {
     headers: { Authorization: token },
   };
@@ -30,6 +26,7 @@ const update = async (blogObject, blogId) => {
 };
 
 const deleteBlog = async (blogId) => {
+  const token = useUserStore.getState().token;
   const config = {
     headers: { Authorization: token },
   };
@@ -37,4 +34,4 @@ const deleteBlog = async (blogId) => {
   return response;
 };
 
-export default { getAll, setToken, create, update, deleteBlog };
+export default { getAll, create, update, deleteBlog };

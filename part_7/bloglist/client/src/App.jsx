@@ -13,6 +13,8 @@ import {
   useNotificationData,
   useNotificationActions,
 } from './stores/NotificationStore';
+import { useBloglistData, useBloglistActions } from './stores/bloglistStore';
+import { useUserStoreData, useUserStoreActions } from './stores/userStore';
 
 import BlogDetails from './components/BlogDetails';
 import CreateBlogForm from './components/CreateBlogForm';
@@ -23,34 +25,25 @@ import Notification from './components/Notification';
 
 import blogService from './services/blogs';
 
-import { useBloglistData, useBloglistActions } from './stores/bloglistStore';
-
 const App = () => {
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const { message, severity } = useNotificationData();
   const { setNotificationMessage } = useNotificationActions();
   const { blogs } = useBloglistData();
   const { initialize } = useBloglistActions();
+  const { user } = useUserStoreData();
+  const { checkUserPresent, logoutUser } = useUserStoreActions();
 
   useEffect(() => {
     initialize();
+    checkUserPresent();
   }, []);
 
   const match = useMatch('/blog-details/:id');
   const blog = match ? blogs.find((blog) => blog.id === match.params.id) : null;
 
-  useEffect(() => {
-    const loggedUserJson = window.localStorage.getItem('loggedBlogAppUser');
-    if (loggedUserJson) {
-      const user = JSON.parse(loggedUserJson);
-      setUser(user);
-      blogService.setToken(user.token);
-    }
-  }, []);
-
   const handleLogout = () => {
-    window.localStorage.removeItem('loggedBlogAppUser');
+    logoutUser();
     navigate('/');
     window.location.reload();
   };
@@ -102,19 +95,11 @@ const App = () => {
         <ErrorBoundary FallbackComponent={FallbackComponent}>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route
-              path="/login"
-              element={<Login user={user} setUser={setUser} />}
-            />
-            <Route
-              path="/create"
-              element={
-                <CreateBlogForm user={user} />
-              }
-            />
+            <Route path="/login" element={<Login />} />
+            <Route path="/create" element={<CreateBlogForm />} />
             <Route
               path="/blog-details/:id"
-              element={<BlogDetails blog={blog} user={user} />}
+              element={<BlogDetails blog={blog} />}
             />
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
           </Routes>

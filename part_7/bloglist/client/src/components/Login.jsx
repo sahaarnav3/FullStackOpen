@@ -1,17 +1,17 @@
 import { useState } from 'react';
-import loginService from '../services/login';
-import blogService from '../services/blogs';
 import { useNavigate, Navigate } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { useNotificationActions } from '../stores/NotificationStore';
+import { useUserStoreData, useUserStoreActions } from '../stores/userStore';
 
 const Login = ({ user, setUser }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { setNotificationMessage } = useNotificationActions();
+  const { loginUser } = useUserStoreActions();
   const navigate = useNavigate();
 
   if (user) return <Navigate to="/" replace />;
@@ -19,16 +19,11 @@ const Login = ({ user, setUser }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const userResponse = await loginService.login({ username, password });
-      setUser(userResponse);
-      blogService.setToken(userResponse.token);
-      window.localStorage.setItem(
-        'loggedBlogAppUser',
-        JSON.stringify(userResponse)
-      );
+      if (!loginUser({ username, password })) throw new Error();
       setUsername('');
       setPassword('');
       navigate('/');
+      setNotificationMessage('Successfully Logged In', 'success');
     } catch {
       setNotificationMessage('Wrong username or password', 'error');
     }

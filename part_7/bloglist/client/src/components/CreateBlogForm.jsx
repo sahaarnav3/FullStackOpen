@@ -1,16 +1,17 @@
 import { useState } from 'react';
-import blogService from '../services/blogs';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { useNotificationActions } from '../stores/NotificationStore';
 import { useBloglistActions } from '../stores/bloglistStore';
+import { useUserStoreData } from '../stores/userStore';
 
-export default function CreateBlogForm({ user }) {
+export default function CreateBlogForm() {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
   const { setNotificationMessage } = useNotificationActions();
   const { addNewBlog } = useBloglistActions();
+  const { user } = useUserStoreData();
 
   const createFormHandler = async (e) => {
     e.preventDefault();

@@ -10,11 +10,13 @@ import {
 
 import { useBloglistActions } from '../stores/bloglistStore';
 import { useNotificationActions } from '../stores/NotificationStore';
+import { useUserStoreData } from '../stores/userStore';
 import { useNavigate } from 'react-router-dom';
 
-const BlogDetails = ({ blog, user }) => {
+const BlogDetails = ({ blog }) => {
   const { updateBlogLike, deleteBlog } = useBloglistActions();
   const { setNotificationMessage } = useNotificationActions();
+  const { user } = useUserStoreData();
   const navigate = useNavigate();
 
   if (!blog) return <h1>404 - Blog Not Found</h1>;
