@@ -23,6 +23,7 @@ import Home from './components/Home';
 import Login from './components/Login';
 import Notification from './components/Notification';
 import Users from './components/Users';
+import UserDetails from './components/UserDetails';
 
 import blogService from './services/blogs';
 
@@ -64,7 +65,10 @@ const App = () => {
                 </Link>
               </Button>
               <Button color="inherit" sx={{ fontSize: '16px' }}>
-                <Link to="/users" style={{ color: 'white', textDecoration: 'none' }}>
+                <Link
+                  to="/users"
+                  style={{ color: 'white', textDecoration: 'none' }}
+                >
                   USERS
                 </Link>
               </Button>
@@ -108,6 +112,7 @@ const App = () => {
               element={<BlogDetails blog={blog} />}
             />
             <Route path="/users" element={<Users />} />
+            <Route path="/users/:id" element={<UserDetails />} />
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
           </Routes>
         </ErrorBoundary>

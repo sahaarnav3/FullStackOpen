@@ -6,4 +6,11 @@ const fetchUsers = async () => {
   return response.data;
 };
 
-export default { fetchUsers };
+const fetchUserBlogs = async(userId) => {
+  const response = await axios.get(`${baseUrl}/${userId}`)
+  if(response.status !== 200)
+    throw new Error('Error Fetching User Details')
+  return response.data;
+}
+
+export default { fetchUsers, fetchUserBlogs };

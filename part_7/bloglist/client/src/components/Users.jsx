@@ -11,6 +11,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import { Link } from 'react-router-dom';
 
 export default function Users() {
   const [users, setUsers] = useState([]);
@@ -19,7 +20,6 @@ export default function Users() {
     const fetchUsers = async () => {
       try {
         let data = await userService.fetchUsers();
-        console.log('dataa', data);
         setUsers(data);
       } catch (error) {
         console.log('Error Occurred in fetching Users. Try Again');
@@ -31,36 +31,44 @@ export default function Users() {
   }, []);
 
   return (
-    <div>
-      <Typography variant="h4" gutterBottom>
-        Users
-      </Typography>
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <h3 style={{ margin: 0 }}>Name</h3>
-              </TableCell>
-              <TableCell>
-                <h3 style={{ margin: 0 }}>Username</h3>
-              </TableCell>
-              <TableCell>
-                <h3 style={{ margin: 0 }}>Blogs Created</h3>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {users.map((row) => (
-              <TableRow key={row.id}>
-                <TableCell>{row.name}</TableCell>
-                <TableCell>{row.username}</TableCell>
-                <TableCell>{row.blogs.length}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
+    <>
+      {loading ? (
+        <Typography variant="h4">Loading...</Typography>
+      ) : (
+        <div>
+          <Typography variant="h4" gutterBottom>
+            Users
+          </Typography>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>
+                    <h3 style={{ margin: 0 }}>Name</h3>
+                  </TableCell>
+                  <TableCell>
+                    <h3 style={{ margin: 0 }}>Username</h3>
+                  </TableCell>
+                  <TableCell>
+                    <h3 style={{ margin: 0 }}>Blogs Created</h3>
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {users.map((row) => (
+                  <TableRow key={row.id}>
+                    <TableCell>
+                      <Link to={`/users/${row.id}`}>{row.name}</Link>
+                    </TableCell>
+                    <TableCell>{row.username}</TableCell>
+                    <TableCell>{row.blogs.length}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </div>
+      )}
+    </>
   );
 }
