@@ -57,6 +57,20 @@ const useBloglistStore = create((set, get) => {
         }
         return false;
       },
+      addComment: async (blogDetails, comment) => {
+        const response = await blogService.addComment(blogDetails.id, {
+          comment: comment,
+        });
+        if (response.status === 200) {
+          set({
+            blogs: get().blogs.map((blog) =>
+              blog.id === blogDetails.id ? {...blog, comments: blog.comments.concat(comment)} : blog
+            ),
+          });
+          return true;
+        }
+        return false;
+      },
     },
   };
 });

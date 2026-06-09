@@ -65,4 +65,26 @@ blogRouter.put('/:id', async (req, res) => {
   if (updatedBlog) return res.json(updatedBlog);
 });
 
+blogRouter.post('/:id/comments', async (req, res) => {
+  const { comment } = req.body;
+  const { id } = req.params;
+
+  if (!comment)
+    return res.status(400).json({ error: 'Comment content is required.' });
+  try {
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      id,
+      { $push: { comments: comment } },
+      { new: true, runValidators: true }
+    );
+    if (!updatedBlog)
+      return res.status(404).json({ error: 'Blog post not found' });
+    return res.status(200).json(updatedBlog);
+  } catch {
+    res.status(500).json({ error: 'Something went wrong' });
+  }
+});
+
+// blogRouter.get('/:id/comments')
+
 module.exports = blogRouter;
